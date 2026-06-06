@@ -48,3 +48,50 @@ If necessary, run make install.
 Enough! Download the "tarball", XaoS-3.0.tar.gz, available from the ftp site, as well as from the home page. Try building it. Running ./configure, make, and finally (as root) make install, works flawlessly.
 
 This is one of an number of examples of prepackaged binaries being more trouble than they are worth.
+
+# example make and make install
+
+```sh
+# unpack and read documentation
+tar xf filename
+cd {directory created by above step}
+less README
+less INSTALL
+
+# generate customised makefile
+./configure {some options ...}
+
+# compile everything in the local directory
+make
+
+# update global directories
+sudo make install
+```
+
+## if there is no sudo available
+
+```sh
+su  # must then enter root password
+make install
+exit
+```
+
+## moving build into its own folder
+
+```sh
+# unpack into a directory {packagename}
+tar xf filename
+
+# create separate build directory
+mkdir {packagename}-build
+
+# compile everything in the separate build directory
+cd {packagename}-build
+../{packagename}/configure {some options}
+make
+
+# update global directories
+sudo make install
+```
+
+Correct Workflow Breakdowntar xf filename extracts the source code.mkdir {packagename}-build creates the build folder.cd {packagename}-build moves you into the build folder.../{packagename}/configure reads the source but configures the build here.make builds the binaries inside the current folder.sudo make install moves the local binaries to system folders.
