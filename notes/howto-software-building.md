@@ -95,3 +95,9 @@ sudo make install
 ```
 
 Correct Workflow Breakdowntar xf filename extracts the source code.mkdir {packagename}-build creates the build folder.cd {packagename}-build moves you into the build folder.../{packagename}/configure reads the source but configures the build here.make builds the binaries inside the current folder.sudo make install moves the local binaries to system folders.
+
+## cmake (configure make) instead of ./configure
+
+```sh
+cmake . -DCMAKE_BUILD_TYPE=Release {some options ...}
+```
