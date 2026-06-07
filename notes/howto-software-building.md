@@ -101,3 +101,19 @@ Correct Workflow Breakdowntar xf filename extracts the source code.mkdir {packag
 ```sh
 cmake . -DCMAKE_BUILD_TYPE=Release {some options ...}
 ```
+
+## Environment Variables
+
+Options to configure the compilation and installation of an application are usually passed as command-line parameters to the “configure” script or the make program. However sometimes configuration options are passed via environment variables instead. These can be specified by placing the definitions on the start of the command, eg
+
+```sh
+NAME=tom ENABLE_FOO=no ./configure
+```
+
+Environment variables can also be defined before running the command:
+
+```sh
+export NAME=tom
+export ENABLE_FOO=no
+./configure
+```
