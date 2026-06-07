@@ -117,3 +117,61 @@ export NAME=tom
 export ENABLE_FOO=no
 ./configure
 ```
+
+## Example Multifile Make Setup
+
+my_project/
+├── include/ # All header files (.h)
+│ ├── prog.h
+│ └── libmylib.h
+├── src/ # Main application source code (.c)
+│ └── prog.c
+├── lib/ # Custom library source code and built libraries
+│ ├── libmylib.c
+│ └── libmylib.a # (Generated automatically)
+├── obj/ # Temporary object files (.o) (Generated automatically)
+└── Makefile # Build instructions at the root level
+
+```sh
+# Makefile
+# Compiler and flags
+
+CC = gcc
+CFLAGS = -Wall -Wextra -Iinclude
+
+# Directories
+
+SRC_DIR = src
+LIB_DIR = lib
+OBJ_DIR = obj
+
+# Targets
+
+MAIN_APP = prog
+STATIC_LIB = $(LIB_DIR)/libmylib.a
+
+# Build the main application
+
+$(MAIN_APP): $(SRC_DIR)/prog.c $(STATIC_LIB) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/prog.c -L$(LIB_DIR) -lmylib
+
+# Build the static library
+
+$(STATIC_LIB): $(OBJ_DIR)/libmylib.o
+ar -rcs $@ $<
+
+# Compile library source into object folder
+
+$(OBJ_DIR)/libmylib.o: $(LIB_DIR)/libmylib.c | $(OBJ_DIR)
+$(CC) $(CFLAGS) -c -o $@ $<
+
+# Create the object directory if it does not exist
+
+$(OBJ_DIR):
+mkdir -p $(OBJ_DIR)
+
+# Clean up built files
+
+clean:
+rm -rf $(OBJ_DIR) $(MAIN_APP) $(LIB_DIR)/\*.a
+```
