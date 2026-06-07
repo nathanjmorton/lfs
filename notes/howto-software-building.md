@@ -120,6 +120,11 @@ export ENABLE_FOO=no
 
 ## Example Multifile Make Setup
 
+To organize a multi-folder project, developers typically separate source code, headers, libraries, and built files into their own dedicated directories. [1, 2, 3]
+Here is a standard, professional project layout and the updated Makefile required to build it.
+
+## Recommended Directory Structure
+
 my_project/
 ├── include/ # All header files (.h)
 │ ├── prog.h
@@ -132,46 +137,61 @@ my_project/
 ├── obj/ # Temporary object files (.o) (Generated automatically)
 └── Makefile # Build instructions at the root level
 
-```sh
-# Makefile
-# Compiler and flags
+## The Multi-Folder Makefile
 
+Save this Makefile in the root directory (my_project/). It uses variables to cleanly manage the paths.
+
+```sh
+# Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
-
 # Directories
-
 SRC_DIR = src
 LIB_DIR = lib
 OBJ_DIR = obj
-
 # Targets
-
 MAIN_APP = prog
 STATIC_LIB = $(LIB_DIR)/libmylib.a
-
 # Build the main application
-
 $(MAIN_APP): $(SRC_DIR)/prog.c $(STATIC_LIB) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/prog.c -L$(LIB_DIR) -lmylib
-
 # Build the static library
-
 $(STATIC_LIB): $(OBJ_DIR)/libmylib.o
-ar -rcs $@ $<
-
+	ar -rcs $@ $<
 # Compile library source into object folder
-
 $(OBJ_DIR)/libmylib.o: $(LIB_DIR)/libmylib.c | $(OBJ_DIR)
-$(CC) $(CFLAGS) -c -o $@ $<
-
+	$(CC) $(CFLAGS) -c -o $@ $<
 # Create the object directory if it does not exist
-
 $(OBJ_DIR):
-mkdir -p $(OBJ_DIR)
-
+	mkdir -p $(OBJ_DIR)
 # Clean up built files
-
 clean:
-rm -rf $(OBJ_DIR) $(MAIN_APP) $(LIB_DIR)/\*.a
+	rm -rf $(OBJ_DIR) $(MAIN_APP) $(LIB_DIR)/*.a
 ```
+
+## Key Changes Explained
+
+- -Iinclude: Tells the compiler to look inside the /include directory for header files. You can now use #include "prog.h" without worrying about relative paths.
+- -L$(LIB_DIR): Tells the linker to look inside the /lib folder instead of the current directory (.) to find libmylib.a.
+- | $(OBJ_DIR): This is an "order-only prerequisite". It ensures the obj/ folder is created before the compiler tries to write files into it.
+- $@ and $<: These are automatic shorthand variables. $@ means "the target file" and $< means "the first prerequisite file". [4, 5, 6]
+
+---
+
+To wrap up this project setup, let me know if you would like to:
+
+- Automate the Makefile to find all .c files automatically using wildcards
+- Add a debugging target for tools like GDB
+- Convert this into a shared library (.so) setup instead of static (.a) [7, 8, 9]
+
+Which improvement should we implement?
+
+[1] [https://www.studyplan.dev](https://www.studyplan.dev/cmake/cmake-project-structure-and-subdirectories)
+[2] [https://www.ni.com](https://www.ni.com/docs/en-US/bundle/labview/page/managing-a-project-in-labview.html)
+[3] [https://www.reddit.com](https://www.reddit.com/r/cpp_questions/comments/j5bkqj/place_header_files_in_separate_folder_or_not/)
+[4] [https://os.phil-opp.com](https://os.phil-opp.com/multiboot-kernel/)
+[5] [https://modern-fortran-in-science-and-technology.readthedocs.io](https://modern-fortran-in-science-and-technology.readthedocs.io/en/latest/chapter_fortran_projects.html)
+[6] [https://shazaali.substack.com](https://shazaali.substack.com/p/makefiles)
+[7] [https://dev.to](https://dev.to/medunes/build-c-projects-like-a-pro-a-guide-to-idiomatic-makefiles-53b6)
+[8] [https://blog.devgenius.io](https://blog.devgenius.io/makefiles-a-practical-guide-techniques-and-templates-d7d99047bf63)
+[9] [https://mangalam0015k.medium.com](https://mangalam0015k.medium.com/mastering-multi-file-c-projects-organize-guard-and-compile-f43fb9efa553)
