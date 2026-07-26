@@ -1,0 +1,16 @@
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# This won't be added again if you remove it.
+# Include ~/.orbstack/ssh/config
+
+
+Host orbstack-root
+    HostName 127.0.0.1
+    Port 32222
+    User root@lfs-host
+    IdentityFile ~/.orbstack/ssh/id_ed25519
+    IdentitiesOnly yes
+
+
+
+

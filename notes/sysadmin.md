@@ -52,3 +52,59 @@ Chapters 7-10
 • "Remount after reboot" — This is actually easier with a directory: nothing to remount. With a partition, forgetting to remount before resuming work is a common mistake. With a directory, it's always there.
 
 One thing to watch: The underlying VM filesystem must support Linux semantics (permissions, symlinks, hard links, device files). Ubuntu's default ext4 filesystem does, so you're fine. The host-mounted Mac path (via OrbStack's macOS share) does not — make sure /mnt/lfs is on the VM's own disk, not under /Users/nathanjmorton.
+
+## chapter 4 preparations
+
+### limited directory layout
+
+```sh
+
+mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
+
+for i in bin lib sbin; do
+  ln -sv usr/$i $LFS/$i
+done
+
+case $(uname -m) in
+  (x86_64) mkdir -pv $LFS/lib64;;
+esac
+
+```
+
+The commands you provided are a foundational step in building a Linux system, specifically from the [Linux From Scratch (LFS)](https://www.google.com/search?q=linux+from+scratch+%28lfs%29&kgmid=/m/01bj03#sv=CBwSkAQKzwMSzAMKjANBTW4zLXlSZFlXTW1hc05WR0JjUHhtS3VXUXJXd3dTQV9nRkdWMmFSbWYwLVdHWGFxVTcwSldWenVaMDdaMDNTSVBmYW5wZGhuMEJrc2xsbGhaMWdzZlRqTlMwRDJncm9GaU52NF9udjNqR2hqX2l4WjBQR3hleXJPamc1OUZKT1ZQRkNVQkprWnRMVGZoczJ5N1FLbXFYMmpBQUxYZl80TTZxV05vcnhHbHdkNHJGR1N0QVRIYk1SV0ZMUmxpWlIxa1c3TktKRmlwWW1BMUpHLUQwOHN4NEZwbWFFRXM0aVpKOEVOR2loZm5qNlp6RkZ5S3JzcGlRdUpHbE1lWUYyYXFTR0RadXlqVzc5eFlFMkRlV1JnLXZSZU9xeFdiSlI3d3FDeWI2bVBqYTVtZjlVNkdtaFA4d25hSW1TNmFablFkRU9IWEJSZG5CWEVDMFRTMXMzM0U2TExkNmlsckNTN3MtQmFfV1pCbUtoY045dDY0M2RFVnQzaEN0d1pxQWVvRFhlMERKbDAxWFcSF2o0WWxhcXpySmZTcnA4NFA0Yy1NOEFvGiJBSktMRm1LVTR6RkdiZkp5NkNySVlwQzA4anpUSHQ1cDF3EgQ3ODU0GgEzIh0KAXESGGxpbnV4IGZyb20gc2NyYXRjaCAobGZzKSISCgVrZ21pZBIJL20vMDFiajAzKAAYRSCqsO0X) book, used to create the standard directory layout and essential symlinks on your target partition.
+Here is a line-by-line breakdown of exactly what this script does:
+
+## 1. Create Base Directories [1]
+
+mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
+
+- mkdir -pv: Creates directories. The -p flag creates parent directories as needed, and -v (verbose) prints a message for each directory created. [2, 3, 4, 5, 6]
+- $LFS/...: Targets the environment variable $LFS, which holds the path to your mounted partition where the new OS is being built. [7, 8]
+- Brace Expansion {}: This expands to create:
+- $LFS/etc and $LFS/var
+  - $LFS/usr/bin, $LFS/usr/lib, and $LFS/usr/sbin [9]
+
+## 2. Create Modern Symlinks (Merged /usr layout)
+
+for i in bin lib sbin; do
+ln -sv usr/$i $LFS/$i done
+
+- for i in bin lib sbin; do ... done: Loops through the words bin, lib, and sbin.
+- ln -sv usr/$i $LFS/$i: Creates symbolic links (-s) and outputs a status message (-v).
+- Result: This points the root-level directories directly to their counterparts inside /usr:
+- /bin → /usr/bin
+  - /lib → /usr/usr/lib
+  - /sbin → /usr/sbin [10, 11, 12, 13]
+
+Note: This architecture is known as a merged /usr layout, used by modern Linux systems to simplify package management and clear up structural redundancies. [14]
+
+## 3. Handle 64-Bit Architecture Requirements [15]
+
+case $(uname -m) in
+x86_64) mkdir -pv $LFS/lib64 ;; esac
+
+- case $(uname -m) in: Checks the machine hardware name of your host build system.
+- x86_64): If your system runs on a 64-bit architecture, this specific condition triggers.
+- mkdir -pv $LFS/lib64: It creates a /lib64 directory, which ensures compatibility for dynamic linkers and library paths that expect 64-bit binaries to live in a dedicated lib64 folder. [16, 17, 18, 19]
+
+If you plan to run this, ensure you have already defined and mounted your $LFS partition variable (e.g., export LFS=/mnt/lfs) in your current terminal session.
