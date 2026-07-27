@@ -194,3 +194,9 @@ EOF
 - LFS_TGT=...: Defines the cross-compilation target triplet (e.g., x86_64-lfs-linux-gnu). This variable triggers the build scripts to construct a specialized cross-compiler rather than a native host compiler.
 - if [ ! -L /bin ]; then ...: Checks if your host system is using an older, traditional directory structure. If /bin is a real folder (not a symlink), it prepends /bin to your path. If it's a modern merged /usr system, it skips it.
 - PATH=$LFS/tools/bin:$PATH: Prioritizes your LFS bootstrap toolchain folder. Anything compiled into $LFS/tools/bin will take precedence over host tools during Chapter 5 and 6 builds.
+
+### move /etc/bash.bashrc to no use as root
+
+```sh
+[! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
+```
