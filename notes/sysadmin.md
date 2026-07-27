@@ -200,3 +200,12 @@ EOF
 ```sh
 [! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 ```
+
+### use all logical cores for make with -j nproc
+
+```sh
+cat >> ~/.bashrc << "EOF"
+export MAKEFLAGS="-j$(nproc)"
+EOF
+
+```
