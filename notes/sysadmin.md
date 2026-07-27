@@ -209,3 +209,9 @@ export MAKEFLAGS="-j$(nproc)"
 EOF
 
 ```
+
+### check url for failed tests (maybe non-critical)
+
+```
+https://www.linuxfromscratch.org/lfs/build-logs/13.0
+```
