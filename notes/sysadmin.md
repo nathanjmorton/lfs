@@ -125,3 +125,16 @@ x86_64) mkdir -pv $LFS/lib64 ;; esac
 - mkdir -pv $LFS/lib64: It creates a /lib64 directory, which ensures compatibility for dynamic linkers and library paths that expect 64-bit binaries to live in a dedicated lib64 folder. [16, 17, 18, 19]
 
 If you plan to run this, ensure you have already defined and mounted your $LFS partition variable (e.g., export LFS=/mnt/lfs) in your current terminal session.
+
+### Make special compiler dir (tools), LFS user and apply permissions
+
+```sh
+mkdir -pv "$LFS"/tools
+chown -v lfs "$LFS"/{usr,var,etc,tools}
+chown -Rv lfs "$LFS"/usr
+
+case $(uname -m) in
+  x86_64) chown -v lfs "$LFS"/lib64 ;;
+esac
+
+```
